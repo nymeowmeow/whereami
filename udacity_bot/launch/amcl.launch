@@ -5,6 +5,9 @@
   <arg name="map_file" default="$(find udacity_bot)/maps/jackal_race.yaml"/>
   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
 
+  <!-- place map frame at odometry frame -->
+  <node pkg="tf" type="static_transform_publisher" name="map_odom_broadcaster"
+        args="0 0 0 0 0 0 map odom 100"/>
   <!-- Localization-->
   <node pkg="amcl" type="amcl" name="amcl" output="screen">
     <remap from="scan" to="udacity_bot/laser/scan"/>
@@ -13,9 +16,20 @@
     <param name="base_frame_id" value="robot_footprint"/>
     <param name="global_frame_id" value="map"/>
     <!-- added parameter-->
-    <param name="min_particles" value="25"/>
+    <param name="min_particles" value="10"/>
     <param name="max_particles" value="200"/>
     <param name="transform_tolerance" value="0.2"/>
+    <param name="initial_pose_x" value="0.0"/>
+    <param name="initial_pose_y" value="0.0"/>
+    <param name="initial_pose_a" value="0.0"/>
+    <!-- laser mode parameter -->
+    <param name="laser_model_type" value="likelihood_field"/>
+    <param name="laser_likelihood_max_dist" value="2.0"/>
+    <!-- odom parameter -->
+    <param name="odom_alpha1" value="0.010"/>
+    <param name="odom_alpha2" value="0.010"/>
+    <param name="odom_alpha3" value="0.010"/>
+    <param name="odom_alpha4" value="0.010"/>
   </node>
   <!-- Move base -->
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
@@ -31,6 +45,8 @@
 
     <param name="base_global_planner" type="string" value="navfn/NavfnROS" />
     <param name="base_local_planner" value="base_local_planner/TrajectoryPlannerROS"/>
+    <param name="yaw_goal_tolerance" value="0.1"/>
+    <param name="xy_goal_tolerance" value="0.2"/>
   </node>
 </launch>
 
